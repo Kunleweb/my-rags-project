@@ -22,6 +22,10 @@ Embeddings are generated using **sentence-transformers** and stored in **ChromaD
 
 ## Work in Progress
 
+ # `Data Ingestion, Data Parsing Completed, Chunking and Query embedding completed`
+ 
+ ![query embed](img/1.png)
+
 The **retrieval layer** is currently being developed. This will handle:
 
 * `Query embedding generation`
