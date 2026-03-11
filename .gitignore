@@ -1,4 +1,4 @@
 /know.ipynb
 /venv
-/data
-/uv.lock
+data/
+/uv.lock 
