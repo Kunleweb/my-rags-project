@@ -65,9 +65,8 @@ data/
 └── text_files/    <-- Put your .txt files here
 ```
 
-### Tips for Customizing:
-- **Starting Fresh**: If you want to clear your local database and re-index everything, just delete the `data/vector_store` folder.
-- **Auto-Indexing**: The system will automatically find, chunk, and index any new files the next time you run a script or notebook. It only processes files that have changed, so it's very efficient.
+### Smart Indexing
+The system automatically finds, chunks, and indexes any new files the next time you run a script or notebook. It uses content-based hashing to skip files it has already processed, making it very fast and efficient during subsequent runs.
 
 ---
 
@@ -87,11 +86,5 @@ You can also run the whole thing as an interactive script in your terminal:
 python main.py
 ```
 
-Once it starts, you can enter questions one after another. Type **'exit'** or **'quit'** to stop.
+Once it starts, you can enter questions and you will get a response. Type Ctrl+C** to stop.
 
-#### Advanced: Force Re-indexing
-If you want to force the system to ignore existing data and re-index everything from scratch, use the `--force` flag:
-
-```bash
-python main.py --force
-```
