@@ -1,4 +1,4 @@
-# RAG-1: Modular RAG Pipeline for Semantic Document Search using ChromaDB, Typesense and Groq LLMs
+# Modular RAG Pipeline for Semantic Document Search using ChromaDB, Typesense and Groq LLMs
 
 This project implements a modular Retrieval-Augmented Generation (RAG) pipeline designed to make it easier to query and interact with document collections using modern language models. The system handles the full workflow: from loading and preprocessing documents, to generating embeddings, storing them in a vector database, and retrieving relevant context to answer user queries.
 
