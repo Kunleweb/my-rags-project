@@ -76,24 +76,22 @@ data/
 There are two main ways to interact with the system:
 
 - **`RAG_Playground.ipynb`**: A quick place to run the whole pipeline and see how it works.
-- **`RAG_System_Deep_Dive.ipynb`**: A detailed walkthrough that explains every step of the process in plain English. This is the best place to start if you want to learn how the system is built.
+- **`RAG_System_Deep_Dive.ipynb`**: A detailed walkthrough that explains every step of the process.
 
-### Running from the command line
+### Interactive CLI
 
-You can also run the whole thing as a script:
+You can also run the whole thing as an interactive script in your terminal:
 
+(might take a bit to run)
 ```bash
 python main.py
 ```
 
-If you want to force it to re-index everything from scratch, use the `--force` flag:
+Once it starts, you can enter questions one after another. Type **'exit'** or **'quit'** to stop.
+
+#### Advanced: Force Re-indexing
+If you want to force the system to ignore existing data and re-index everything from scratch, use the `--force` flag:
 
 ```bash
 python main.py --force
 ```
-
----
-
-## 5. Summary
-
-RAG-1 is a clean, professional implementation of a RAG system. By keeping everything modular, it's easy to tweak the settings or swap out parts of the pipeline to see what works best for your data.

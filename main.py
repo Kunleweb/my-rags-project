@@ -66,18 +66,39 @@ def run_demo(backend: Literal["chroma", "typesense"] = "chroma", force_ingest: b
         pipeline = build_typesense_pipeline(force_ingest=force_ingest)
     else:
         pipeline = build_chroma_pipeline(force_ingest=force_ingest)
+    print("\n--- RAG Interactive CLI ---")
+    print("Type your questions below. Type 'exit' or 'quit' to stop.")
+    
+    while True:
+        try:
+            question = input("\nQuery: ").strip()
+            
+            if not question:
+                continue
+            if question.lower() in ["exit", "quit"]:
+                print("Exiting CLI...")
+                break
+                
+            result = pipeline.query(question, top_k=3, min_score=0.1, summarize=True)
 
-    # Replace the string below with your own question based on your indexed data.
-    question = "How do I use this RAG system?"
-    result = pipeline.query(question, top_k=3, min_score=0.1, summarize=True)
-
-    print("\nQuestion:")
-    print(result["question"])
-    print("\nAnswer (Groq):")
-    print(result["answer"])
-    print("\nSources:")
-    for src in result["sources"]:
-        print(f"- {src['source']} (page {src['page']})")
+            print("\nAnswer (Groq):")
+            print(result["answer"])
+            
+            if result["summary"]:
+                print("\nExecutive Summary:")
+                print(result["summary"])
+                
+            print("\nSources:")
+            for src in result["sources"]:
+                source_name = src.get('source', 'Unknown')
+                page_num = src.get('page', '?')
+                print(f"- {source_name} (page {page_num})")
+                
+        except KeyboardInterrupt:
+            print("\nExiting CLI...")
+            break
+        except Exception as e:
+            print(f"\nAn error occurred: {e}")
 
 
 if __name__ == "__main__":
