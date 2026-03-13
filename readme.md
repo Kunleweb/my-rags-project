@@ -1,6 +1,10 @@
 # RAG-1: A Modular RAG Framework
 
-This project is a simple, modular system for Retrieval-Augmented Generation (RAG). It handles everything from loading your documents to answering questions using Groq's fast LLMs. You can use it as a playground to test different ways of storing and searching data, using either local storage (Chroma) or a remote search engine (Typesense).
+This project implements a modular Retrieval-Augmented Generation (RAG) pipeline designed to make it easier to query and interact with document collections using modern language models. The system handles the full workflow—from loading and preprocessing documents, to generating embeddings, storing them in a vector database, and retrieving relevant context to answer user queries.
+
+It is designed as a lightweight and extensible environment for experimenting with different retrieval strategies and storage backends. The current implementation supports both local vector storage with Chroma and remote search using Typesense, allowing flexible experimentation with different retrieval infrastructures.
+
+For generation, the pipeline integrates with Groq’s high-performance LLM APIs, enabling fast response times while grounding answers in retrieved document context. The modular structure also makes it easy to swap components such as embedding models, vector stores, or retrieval strategies.
 
 ## What it does
 
