@@ -1,8 +1,8 @@
 [project]
 name = "rag-1"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "RAG playground with Chroma, Typesense, and Groq"
+readme = "readme.md"
 requires-python = ">=3.14"
 dependencies = [
     "chromadb>=1.5.5",
@@ -11,7 +11,12 @@ dependencies = [
     "langchain>=1.2.11",
     "langchain-community>=0.4.1",
     "langchain-core>=1.2.18",
+    "langchain-groq>=1.1.2",
+    "llama-index>=0.14.16",
+    "llama-index-embeddings-huggingface>=0.7.0",
     "pymupdf>=1.27.2",
     "pypdf>=6.8.0",
+    "python-dotenv>=1.2.2",
     "sentence-transformers>=5.2.3",
+    "typesense>=2.0.0",
 ]
