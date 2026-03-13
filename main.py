@@ -10,28 +10,35 @@ from src.retrieval import ChromaRAGRetriever, TypesenseRAGRetriever
 from src.vectorstores import ChromaVectorStore, TypesenseVectorStore
 
 
-def build_chroma_pipeline() -> AdvancedRAGPipeline:
+def build_chroma_pipeline(force_ingest: bool = False) -> AdvancedRAGPipeline:
     cfg = AppConfig()
-
-    # Ingestion + chunking
-    raw_docs = load_text_and_pdfs(cfg.paths.data_dir)
-    chunks = split_documents(raw_docs)
-
-    # Embeddings + Chroma vector store
     embed_manager = EmbeddingManager()
     embed_manager.load_model()
-    texts = [doc.page_content for doc in chunks]
-    embeddings = embed_manager.generate_embeddings(texts)
-
+    
     chroma_store = ChromaVectorStore()
-    chroma_store.add_documents(chunks, embeddings)
+    
+    # Validates existing document count to determine if indexing is required.
+    if chroma_store.count() == 0 or force_ingest:
+        print("Ingesting and indexing documents...")
+        # Ingestion + chunking
+        raw_docs = load_text_and_pdfs(cfg.paths.data_dir)
+        chunks = split_documents(raw_docs)
+
+        # Embeddings + Chroma vector store
+        texts = [doc.page_content for doc in chunks]
+        embeddings = embed_manager.generate_embeddings(texts)
+        chroma_store.add_documents(chunks, embeddings)
+    else:
+        print(f"Vector store already contains {chroma_store.count()} documents. Skipping ingestion.")
 
     retriever = ChromaRAGRetriever(chroma_store, embed_manager)
     llm = build_groq_llm()
     return AdvancedRAGPipeline(retriever=retriever, llm=llm)
 
 
-def build_typesense_pipeline() -> AdvancedRAGPipeline:
+def build_typesense_pipeline(force_ingest: bool = False) -> AdvancedRAGPipeline:
+    # The Typesense implementation currently rebuilds the collection on each execution,
+    # as the remote-first nature of the Typesense wrapper is optimized for hosted environments.
     cfg = AppConfig()
 
     # Ingestion + chunking
@@ -47,20 +54,21 @@ def build_typesense_pipeline() -> AdvancedRAGPipeline:
     return AdvancedRAGPipeline(retriever=retriever, llm=llm)
 
 
-def run_demo(backend: Literal["chroma", "typesense"] = "chroma") -> None:
+def run_demo(backend: Literal["chroma", "typesense"] = "chroma", force_ingest: bool = False) -> None:
     """
-    Simple console demo to show:
-    - How Groq is used for generation
-    - How embeddings are stored either in Chroma or Typesense
+    Executes a demonstration of the RAG pipeline, showcasing:
+    - LLM-based response generation via Groq.
+    - Persistent document storage across different vector backends.
     """
     print(f"Selected backend: {backend}")
 
     if backend == "typesense":
-        pipeline = build_typesense_pipeline()
+        pipeline = build_typesense_pipeline(force_ingest=force_ingest)
     else:
-        pipeline = build_chroma_pipeline()
+        pipeline = build_chroma_pipeline(force_ingest=force_ingest)
 
-    question = "What skills is the interviewer looking for?"
+    # Replace the string below with your own question based on your indexed data.
+    question = "How do I use this RAG system?"
     result = pipeline.query(question, top_k=3, min_score=0.1, summarize=True)
 
     print("\nQuestion:")
@@ -73,6 +81,8 @@ def run_demo(backend: Literal["chroma", "typesense"] = "chroma") -> None:
 
 
 if __name__ == "__main__":
+    import sys
     backend = get_backend_from_env(default="chroma")
-    run_demo(backend)
+    force = "--force" in sys.argv
+    run_demo(backend, force_ingest=force)
 

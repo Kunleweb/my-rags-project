@@ -1,5 +1,5 @@
-from __future__ import annotations
-
+import hashlib
+import uuid
 from dataclasses import dataclass
 from typing import Any, Dict, List, Sequence
 
@@ -26,7 +26,7 @@ class RetrievedChunk:
 
 
 class ChromaVectorStore:
-    """Chroma-based vector store (local, persistent)."""
+    """Implementation of a local, persistent vector storage backend using ChromaDB."""
 
     def __init__(
         self,
@@ -49,6 +49,10 @@ class ChromaVectorStore:
         documents: Sequence[Any],
         embeddings: np.ndarray,
     ) -> None:
+        """
+        Integrates a collection of documents and their corresponding embeddings into the vector store.
+        Utilizes content-based hashing to ensure idempotent indexing.
+        """
         if len(documents) != len(embeddings):
             raise ValueError("Number of documents must match number of embeddings.")
 
@@ -58,23 +62,28 @@ class ChromaVectorStore:
         embeddings_list: List[list[float]] = []
 
         for idx, (doc, embedding) in enumerate(zip(documents, embeddings)):
-            doc_id = f"doc_{idx}"
+            content = getattr(doc, "page_content", "")
+            # Create a stable ID based on content to avoid duplicates
+            doc_id = hashlib.md5(content.encode("utf-8")).hexdigest()
             ids.append(doc_id)
 
             metadata = dict(getattr(doc, "metadata", {}) or {})
-            metadata["doc_index"] = idx
-            metadata["content_length"] = len(getattr(doc, "page_content", ""))
+            metadata["content_length"] = len(content)
             metadatas.append(metadata)
 
-            documents_text.append(getattr(doc, "page_content", ""))
+            documents_text.append(content)
             embeddings_list.append(embedding.tolist())
 
-        self.collection.add(
+        self.collection.upsert(
             ids=ids,
             embeddings=embeddings_list,
             metadatas=metadatas,
             documents=documents_text,
         )
+
+    def count(self) -> int:
+        """Return the number of documents in the collection."""
+        return self.collection.count()
 
     def query(
         self,
@@ -115,10 +124,7 @@ class ChromaVectorStore:
 
 class TypesenseVectorStore:
     """
-    Typesense-backed vector store using LangChain's Typesense integration.
-
-    This stores embeddings in a Typesense collection and exposes a unified
-    similarity search interface compatible with the rest of the RAG pipeline.
+    Implementation of a remote vector storage backend utilizing the Typesense search engine and LangChain integrations.
     """
 
     def __init__(

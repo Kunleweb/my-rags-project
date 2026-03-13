@@ -30,7 +30,7 @@ def build_groq_llm() -> ChatGroq:
 
 
 def rag_simple(query: str, retriever: Retriever, llm: ChatGroq, top_k: int = 3) -> str:
-    """Minimal RAG: retrieve context, ask Groq to answer."""
+    """Consolidated RAG operation: retrieves relevant context and generates a direct response using the Groq LLM."""
     results = retriever.retrieve(query, top_k=top_k)
     context = "\n\n".join(doc["content"] for doc in results) if results else ""
     if not context:
@@ -56,8 +56,8 @@ def rag_advanced(
     return_context: bool = False,
 ) -> Dict[str, Any]:
     """
-    RAG pipeline with extra features:
-    - Returns answer, sources, and a simple confidence signal when available.
+    Advanced RAG operation providing granular control over retrieval and generation.
+    Returns the generated answer along with attributed sources and a similarity-based confidence metric.
     """
     results = retriever.retrieve(query, top_k=top_k, score_threshold=min_score)
     if not results:
@@ -105,7 +105,7 @@ Answer:"""
 
 @dataclass
 class AdvancedRAGPipeline:
-    """Higher-level pipeline with citations and optional summarization."""
+    """Orchestrates the end-to-end RAG lifecycle, including contextual retrieval, citation management, and optional summarization."""
 
     retriever: Retriever
     llm: ChatGroq

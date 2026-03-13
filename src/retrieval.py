@@ -10,14 +10,14 @@ from .vectorstores import ChromaVectorStore, RetrievedChunk, TypesenseVectorStor
 
 
 class Retriever(Protocol):
-    """Common retrieval protocol used by the RAG pipeline."""
+    """Defines a standardized interface for document retrieval operations within the RAG framework."""
 
     def retrieve(self, query: str, top_k: int = 5, score_threshold: float = 0.0) -> List[Dict[str, Any]]:
         ...
 
 
 class ChromaRAGRetriever:
-    """Retriever using local Chroma vector store and EmbeddingManager."""
+    """Retriever implementation utilizing the local Chroma vector database and a dedicated embedding manager."""
 
     def __init__(self, vector_store: ChromaVectorStore, embedding_manager: EmbeddingManager) -> None:
         self.vector_store = vector_store
@@ -37,7 +37,7 @@ class ChromaRAGRetriever:
 
 
 class TypesenseRAGRetriever:
-    """Retriever using Typesense vector store (embeddings stored in Typesense)."""
+    """Retriever implementation utilizing the remote Typesense vector search engine."""
 
     def __init__(self, vector_store: TypesenseVectorStore) -> None:
         self.vector_store = vector_store

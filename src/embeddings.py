@@ -5,14 +5,14 @@ from sentence_transformers import SentenceTransformer
 
 
 class EmbeddingManager:
-    """Handles document embedding generation using SentenceTransformer."""
+    """Manages the generation of document embeddings using the SentenceTransformer library."""
 
     def __init__(self, model_name: str = "all-MiniLM-L6-v2") -> None:
         self.model_name = model_name
         self.model: SentenceTransformer | None = None
 
     def load_model(self) -> None:
-        """Load the SentenceTransformer model."""
+        """Initializes the SentenceTransformer model if not already loaded."""
         if self.model is not None:
             return
 

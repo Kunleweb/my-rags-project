@@ -11,7 +11,7 @@ load_dotenv()
 
 @dataclass
 class PathsConfig:
-    """Configuration for local data paths."""
+    """Manages the filesystem structure for data and persistent storage."""
 
     base_dir: Path = Path(__file__).resolve().parent.parent
     data_dir: Path = base_dir / "data"
@@ -22,7 +22,7 @@ class PathsConfig:
 
 @dataclass
 class GroqConfig:
-    """Configuration for Groq LLM."""
+    """Manages configuration for the Groq Large Language Model integration."""
 
     api_key: Optional[str] = os.getenv("GROQ_API_KEY")
     model_name: str = os.getenv("GROQ_MODEL_NAME", "llama-3.1-8b-instant")
@@ -32,7 +32,7 @@ class GroqConfig:
 
 @dataclass
 class ChromaConfig:
-    """Configuration for Chroma vector store."""
+    """Manages configuration for the Chroma vector database."""
 
     collection_name: str = os.getenv("CHROMA_COLLECTION_NAME", "pdf_documents")
     persist_directory: Path = PathsConfig().chroma_dir
@@ -40,7 +40,7 @@ class ChromaConfig:
 
 @dataclass
 class TypesenseConfig:
-    """Configuration for Typesense (for vector store use)."""
+    """Manages configuration for the Typesense vector search engine."""
 
     host: str = os.getenv("TYPESENSE_HOST", "tobd21ghuvcmr46fp-1.a2.typesense.net")
     port: str = os.getenv("TYPESENSE_PORT", "443")
@@ -53,10 +53,21 @@ class TypesenseConfig:
 class AppConfig:
     """Top-level configuration holder."""
 
-    paths: PathsConfig = PathsConfig()
-    groq: GroqConfig = GroqConfig()
-    chroma: ChromaConfig = ChromaConfig()
-    typesense: TypesenseConfig = TypesenseConfig()
+    # Use default_factory to avoid mutable default instances being shared
+    paths: PathsConfig = None  # type: ignore[assignment]
+    groq: GroqConfig = None  # type: ignore[assignment]
+    chroma: ChromaConfig = None  # type: ignore[assignment]
+    typesense: TypesenseConfig = None  # type: ignore[assignment]
+
+    def __post_init__(self) -> None:
+        if self.paths is None:
+            self.paths = PathsConfig()
+        if self.groq is None:
+            self.groq = GroqConfig()
+        if self.chroma is None:
+            self.chroma = ChromaConfig()
+        if self.typesense is None:
+            self.typesense = TypesenseConfig()
 
 
 def get_backend_from_env(default: str = "chroma") -> str:

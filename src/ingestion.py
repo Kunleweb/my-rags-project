@@ -15,7 +15,7 @@ def load_text_and_pdfs(
     base_data_dir: Path | None = None,
 ) -> List[Document]:
     """
-    Load text files and PDFs from the project's data directory into LangChain Documents.
+    Parses and loads text and PDF documents from the specified directory into LangChain-compatible Document objects.
     """
     base_dir = base_data_dir or config.paths.data_dir
     pdf_dir = base_dir / "pdf"
@@ -34,7 +34,7 @@ def load_text_and_pdfs(
         documents.extend(text_loader.load())
 
     if pdf_dir.exists():
-        # Load PDFs with PyPDFLoader, add basic metadata enrichment.
+        # Processes PDF documents using PyPDFLoader and enriches them with foundational metadata.
         pdf_files = list(Path(pdf_dir).glob("**/*.pdf"))
         for pdf_path in pdf_files:
             loader = PyPDFLoader(str(pdf_path))
@@ -52,7 +52,7 @@ def split_documents(
     chunk_size: int = 500,
     chunk_overlap: int = 100,
 ) -> List[Document]:
-    """Split documents into smaller chunks."""
+    """Partitions document objects into smaller, overlapping segments to optimize retrieval precision."""
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
