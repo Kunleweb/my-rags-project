@@ -1,6 +1,6 @@
 # RAG-1: A Modular RAG Framework
 
-This project implements a modular Retrieval-Augmented Generation (RAG) pipeline designed to make it easier to query and interact with document collections using modern language models. The system handles the full workflow—from loading and preprocessing documents, to generating embeddings, storing them in a vector database, and retrieving relevant context to answer user queries.
+This project implements a modular Retrieval-Augmented Generation (RAG) pipeline designed to make it easier to query and interact with document collections using modern language models. The system handles the full workflow: from loading and preprocessing documents, to generating embeddings, storing them in a vector database, and retrieving relevant context to answer user queries.
 
 It is designed as a lightweight and extensible environment for experimenting with different retrieval strategies and storage backends. The current implementation supports both local vector storage with Chroma and remote search using Typesense, allowing flexible experimentation with different retrieval infrastructures.
 
