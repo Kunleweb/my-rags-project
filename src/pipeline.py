@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Protocol
+from typing import Any, Dict, List
 
 from langchain_groq import ChatGroq
 
 from .config import AppConfig
-
+from .embeddings import EmbeddingManager
+from .ingestion import load_text_and_pdfs, split_documents
+from .retrieval import ChromaRAGRetriever, Retriever, TypesenseRAGRetriever
+from .vectorstores import ChromaVectorStore, TypesenseVectorStore
 
 config = AppConfig()
-
-
-class Retriever(Protocol):
-    def retrieve(self, query: str, top_k: int = 5, score_threshold: float = 0.0) -> List[Dict[str, Any]]:
-        ...
 
 
 def build_groq_llm() -> ChatGroq:
@@ -185,3 +183,42 @@ Answer:"""
             "history": self.history,
         }
 
+
+class PipelineFactory:
+    """Factory for creating and configuring RAG pipelines based on backends."""
+
+    @staticmethod
+    def create(
+        backend: str = "chroma", force_ingest: bool = False
+    ) -> AdvancedRAGPipeline:
+        cfg = AppConfig()
+        llm = build_groq_llm()
+
+        if backend == "chroma":
+            embed_manager = EmbeddingManager()
+            embed_manager.load_model()
+            vector_store = ChromaVectorStore()
+
+            if vector_store.count() == 0 or force_ingest:
+                print(f"Indexing documents for {backend}...")
+                docs = load_text_and_pdfs(cfg.paths.data_dir)
+                chunks = split_documents(docs)
+                embeddings = embed_manager.generate_embeddings(
+                    [c.page_content for c in chunks]
+                )
+                vector_store.add_documents(chunks, embeddings)
+
+            retriever = ChromaRAGRetriever(vector_store, embed_manager)
+            return AdvancedRAGPipeline(retriever=retriever, llm=llm)
+
+        elif backend == "typesense":
+            print(f"Initializing remote {backend} backend...")
+            docs = load_text_and_pdfs(cfg.paths.data_dir)
+            chunks = split_documents(docs)
+            vector_store = TypesenseVectorStore()
+            vector_store.build_from_documents(chunks)
+            retriever = TypesenseRAGRetriever(vector_store)
+            return AdvancedRAGPipeline(retriever=retriever, llm=llm)
+
+        else:
+            raise ValueError(f"Unsupported backend: {backend}")

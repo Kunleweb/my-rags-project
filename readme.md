@@ -21,11 +21,11 @@ The system follows a standard RAG pipeline:
 
 The code is split into a few simple parts:
 
-- **Ingestion (`src/ingestion.py`)**: Finds your files and cuts them into overlapping chunks so no information is lost.
-- **Embeddings (`src/embeddings.py`)**: Uses `sentence-transformers` to create high-quality vector representations of your text.
-- **Storage (`src/vectorstores.py`)**: A single place to manage both Chroma and Typesense. It uses a hashing trick to make sure it doesn't index the same file twice.
-- **Retrieval (`src/retrieval.py`)**: Searches the database for the most relevant text based on what you asked.
-- **The Pipeline (`src/pipeline.py`)**: Puts everything together—it grabs the text, talks to the LLM, and gives you the final answer.
+- **Ingestion (`src/ingestion.py`)**: Handles document loading and intelligent chunking.
+- **Storage (`src/vectorstores.py`)**: Manages local (Chroma) and remote (Typesense) storage with content-based deduplication.
+- **Retrieval (`src/retrieval.py`)**: Standardizes search operations across different backends using a shared `Retriever` protocol.
+- **Pipeline (`src/pipeline.py`)**: Orchestrates LLM interaction and includes a `PipelineFactory` for easy backend switching.
+- **Public API (`src/__init__.py`)**: Exposes key components for clean imports throughout the project.
 
 ---
 
@@ -45,14 +45,11 @@ RAG_BACKEND=chroma
 
 ### Installation
 
-Install the requirements using `pip`:
+This project uses `uv` for lightning-fast dependency management.
 
 ```bash
-python -m venv .venv
-# On Windows
-.venv\Scripts\activate
-
-pip install -r requirements.txt
+# Sync dependencies and create a virtual environment
+uv sync
 ```
 
 ---
@@ -65,8 +62,8 @@ To get started, create the following folders in the root directory:
 
 ```text
 data/
-├── pdf/           <-- Put your .pdf files here
-└── text_files/    <-- Put your .txt files here
+-----pdf/           <-- Put your .pdf files here
+-----text_files/    <-- Put your .txt files here
 ```
 
 ### Smart Indexing
@@ -76,10 +73,11 @@ The system automatically finds, chunks, and indexes any new files the next time 
 
 ## 4. Explore with Notebooks
 
-There are two main ways to interact with the system:
+The `notebooks/` directory contains a step-by-step walkthrough of the RAG lifecycle:
 
-- **`RAG_Playground.ipynb`**: A quick place to run the whole pipeline and see how it works.
-- **`RAG_System_Deep_Dive.ipynb`**: A detailed walkthrough that explains every step of the process.
+- **`notebooks/01_Ingestion_Pipeline.ipynb`**: Demonstrates document loading and vector indexing.
+- **`notebooks/02_Retrieval_Architecture.ipynb`**: Explores local (Chroma) and remote (Typesense) retrieval.
+- **`notebooks/03_LLM_Generation.ipynb`**: Shows how to synthesize answers with Groq LLMs.
 
 ### Interactive CLI
 
