@@ -1,10 +1,6 @@
 # Modular RAG Pipeline for Semantic Document Search using ChromaDB, Typesense and Groq LLMs
 
-This project implements a modular Retrieval-Augmented Generation (RAG) pipeline designed to make it easier to query and interact with document collections using modern language models. The system handles the full workflow: from loading and preprocessing documents, to generating embeddings, storing them in a vector database, and retrieving relevant context to answer user queries.
-
-It is designed as a lightweight and extensible environment for experimenting with different retrieval strategies and storage backends. The current implementation supports both local vector storage with Chroma and remote search using Typesense, allowing flexible experimentation with different retrieval infrastructures.
-
-For generation, the pipeline integrates with Groq’s high-performance LLM APIs, enabling fast response times while grounding answers in retrieved document context. The modular structure also makes it easy to swap components such as embedding models, vector stores, or retrieval strategies.
+The pipeline integrates with Groq’s high-performance LLM APIs, enabling fast response times while grounding answers in retrieved document context. The modular structure also makes it easy to swap components such as embedding models, vector stores, or retrieval strategies.
 
 ## What it does
 
